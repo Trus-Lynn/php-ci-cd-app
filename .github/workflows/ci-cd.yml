@@ -13,39 +13,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source code
+    - name: ✅ Checkout source code
       uses: actions/checkout@v3
 
-    - name: Configure AWS credentials
+    - name: ✅ Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: ${{ env.AWS_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
 
-    - name: Set up Docker Buildx
+    - name: ✅ Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Login to Amazon ECR
+    - name: ✅ Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build Docker image
+    - name: 🐳 Build Docker image
       run: |
         docker build -t php-ci-cd-app .
         docker tag php-ci-cd-app:latest ${{ secrets.ECR_REPO }}:latest
 
-    - name: Push Docker image to ECR
+    - name: 🚀 Push Docker image to ECR
       run: |
         docker push ${{ secrets.ECR_REPO }}:latest
 
-    - name: SonarCloud Scan
+    - name: 🧠 SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v2
       with:
         projectBaseDir: .
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    - name: Deploy to ECS
+    - name: 🛰️ Deploy to ECS
       run: |
         aws ecs update-service \
           --cluster php-ci-cd-cluster \
